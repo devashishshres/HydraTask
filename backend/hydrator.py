@@ -131,7 +131,7 @@ def hydrate_task(task: str, db: Session) -> ActionCard:
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.5-flash-lite",
             contents=prompt,
             config=types.GenerateContentConfig(
                 max_output_tokens=400,   # enough for a full action card, stops over-generation

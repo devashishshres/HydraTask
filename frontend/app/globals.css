@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* === Theme: warm workshop — dark charcoal, muted green accent === */
+/* === Theme: warm workshop — dark charcoal, seafoam teal accent === */
 
 :root {
   --bg-primary: #141210;
@@ -66,8 +66,17 @@ body::before {
   }
 }
 
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+  50% { box-shadow: 0 0 20px 4px var(--accent-glow); }
+}
+
 .animate-fade-up {
   animation: fade-up 0.4s ease-out both;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
 
 /* Stagger children for card sections */

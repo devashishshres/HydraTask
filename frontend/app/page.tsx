@@ -12,42 +12,7 @@ interface ActionCard {
   original_task: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-const MIN_LENGTH = 10;
-const MAX_LENGTH = 300;
-
-/* ── Input validation ──────────────────────────────────────────────────────
-   Returns an error string if invalid, or null if the input is acceptable.
-   - Strips emojis and non-printable unicode before checking
-   - Enforces min/max length
-   - Rejects inputs that are only numbers or special characters (no real words)
-   ───────────────────────────────────────────────────────────────────────── */
-function validateTask(raw: string): { clean: string; error: string | null } {
-  // Remove emojis and non-standard unicode (keep basic latin, punctuation, spaces)
-  const clean = raw
-    .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "")
-    .replace(/[^\x20-\x7E\s]/g, "") // keep only printable ASCII + whitespace
-    .trim();
-
-  if (clean.length === 0) {
-    return { clean, error: "Please describe your task." };
-  }
-
-  if (clean.length < MIN_LENGTH) {
-    return { clean, error: `Task is too short — please add more detail (min ${MIN_LENGTH} characters).` };
-  }
-
-  if (clean.length > MAX_LENGTH) {
-    return { clean, error: `Task is too long — please keep it under ${MAX_LENGTH} characters.` };
-  }
-
-  // Must contain at least one real word (2+ letters in a row)
-  if (!/[a-zA-Z]{2,}/.test(clean)) {
-    return { clean, error: "Please describe the task using words, not just symbols or numbers." };
-  }
-
-  return { clean, error: null };
-}
+const API_URL = "http://localhost:8000";
 
 export default function Home() {
   const [task, setTask] = useState("");
@@ -56,12 +21,7 @@ export default function Home() {
   const [error, setError] = useState("");
 
   async function handleHydrate() {
-    const { clean, error: validationError } = validateTask(task);
-
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+    if (!task.trim()) return;
 
     setLoading(true);
     setError("");
@@ -71,7 +31,7 @@ export default function Home() {
       const res = await fetch(`${API_URL}/hydrate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task: clean }),
+        body: JSON.stringify({ task }),
       });
 
       if (!res.ok) {
@@ -88,13 +48,6 @@ export default function Home() {
     }
   }
 
-  /* Show live character count color feedback */
-  const charCount = task.length;
-  const charCountColor =
-    charCount > MAX_LENGTH ? "text-red-400" :
-    charCount > MAX_LENGTH * 0.85 ? "text-yellow-500" :
-    "text-text-muted";
-
   return (
     <main className="flex flex-1 flex-col items-center px-4 py-16 sm:py-24">
       <div className="w-full max-w-2xl">
@@ -102,6 +55,7 @@ export default function Home() {
         {/* Header */}
         <header className="mb-12 animate-fade-up">
           <div className="flex items-center gap-3 mb-3">
+            {/* Accent mark before title */}
             <div className="w-2 h-8 rounded-sm bg-accent" />
             <h1 className="text-3xl sm:text-4xl font-bold font-serif text-text-primary tracking-tight">
               HydraTask
@@ -117,10 +71,7 @@ export default function Home() {
         <div className="animate-fade-up" style={{ animationDelay: "0.1s" }}>
           <textarea
             value={task}
-            onChange={(e) => {
-              setTask(e.target.value);
-              if (error) setError(""); // clear error as user types
-            }}
+            onChange={(e) => setTask(e.target.value)}
             placeholder='e.g. "Fix the slow database" or "Dashboard is showing wrong numbers"'
             rows={3}
             className="w-full bg-bg-surface border border-border rounded-lg px-4 py-3
@@ -136,17 +87,10 @@ export default function Home() {
             }}
           />
 
-          {/* Character count */}
-          <div className="flex justify-end mt-1">
-            <span className={`text-xs font-mono ${charCountColor}`}>
-              {charCount} / {MAX_LENGTH}
-            </span>
-          </div>
-
           <button
             onClick={handleHydrate}
             disabled={loading || !task.trim()}
-            className="mt-2 w-full py-3 rounded-lg font-sans font-medium text-base
+            className="mt-3 w-full py-3 rounded-lg font-sans font-medium text-base
                        transition-all duration-200 cursor-pointer
                        bg-accent text-white
                        hover:brightness-110
@@ -163,9 +107,9 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Validation / API error */}
+        {/* Error */}
         {error && (
-          <div className="mt-4 p-4 rounded-lg bg-red-900/20 border border-red-800/40 text-red-300 text-sm animate-fade-up">
+          <div className="mt-6 p-4 rounded-lg bg-red-900/20 border border-red-800/40 text-red-300 text-sm animate-fade-up">
             {error}
           </div>
         )}
@@ -181,7 +125,9 @@ export default function Home() {
   );
 }
 
-/* ── ActionCard display ─────────────────────────────────────────────────── */
+/* ──────────────────────────────────────────────
+   ActionCard display — shows the hydrated result
+   ────────────────────────────────────────────── */
 
 function ResultCard({ card }: { card: ActionCard }) {
   return (
@@ -218,6 +164,7 @@ function ResultCard({ card }: { card: ActionCard }) {
       {/* Docs + Assignment */}
       <div className="grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border">
 
+        {/* Documentation */}
         <div className="px-6 py-5">
           <span className="text-xs font-mono uppercase tracking-wider text-accent-text">
             Documentation
@@ -240,6 +187,7 @@ function ResultCard({ card }: { card: ActionCard }) {
           </ul>
         </div>
 
+        {/* Owner + Repo */}
         <div className="px-6 py-5 space-y-4">
           <div>
             <span className="text-xs font-mono uppercase tracking-wider text-accent-text">
@@ -264,7 +212,7 @@ function ResultCard({ card }: { card: ActionCard }) {
         </div>
       </div>
 
-      {/* Footer */}
+      {/* Footer — original input */}
       <div className="px-6 py-3 bg-bg-primary/50 border-t border-border">
         <p className="text-xs text-text-muted font-mono">
           <span className="text-text-secondary">Input:</span> &quot;{card.original_task}&quot;
