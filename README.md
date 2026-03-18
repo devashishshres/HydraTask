@@ -139,40 +139,6 @@ npm run dev
 
 ---
 
-## API Reference
-
-### `GET /`
-Health check.
-```json
-{ "status": "HydraTask backend is running" }
-```
-
-### `POST /hydrate`
-Takes a task description, returns a structured action card.
-
-**Request:**
-```json
-{ "task": "Fix the slow database queries on the analytics dashboard" }
-```
-
-**Response:**
-```json
-{
-  "objective": "Investigate and resolve slow query performance in the analytics pipeline",
-  "steps": [
-    "Check Grafana dashboards for query latency spikes",
-    "Review recent changes to the data-pipeline service",
-    "Profile slow queries and add missing indexes"
-  ],
-  "docs": ["https://docs.acme.com/data/pipeline-arch"],
-  "assigned_to": "Dan Kim",
-  "repo": "https://github.com/acme-corp/data-pipeline",
-  "original_task": "Fix the slow database queries on the analytics dashboard"
-}
-```
-
----
-
 ## Seeded Data
 
 The mock database covers a realistic cross-functional engineering org:
