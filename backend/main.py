@@ -17,15 +17,10 @@ from hydrator import hydrate_task
 
 app = FastAPI(title="HydraTask API")
 
-# Allow the Next.js frontend to call this API
-# ALLOWED_ORIGINS env var is a comma-separated list; falls back to localhost for local dev
-_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
-_allowed_origins = [o.strip() for o in _raw_origins.split(",")]
-
+# Allow all origins — safe for a hackathon/demo
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_allowed_origins,
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
