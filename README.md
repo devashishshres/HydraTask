@@ -46,7 +46,6 @@ https://hydra-task.vercel.app/
 | Backend | FastAPI (Python) |
 | Database | PostgreSQL (via SQLAlchemy) |
 | AI | Google Gemini 2.5 Flash |
-| Fonts | Bitter · Work Sans · Fira Code |
 
 ---
 
