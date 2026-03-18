@@ -31,6 +31,13 @@ The result is a structured **action card** — ready to assign, act on, or drop 
 
 ---
 
+---
+
+## Check out HydraTask here
+https://hydra-task.vercel.app/
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
