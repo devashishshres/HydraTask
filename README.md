@@ -130,35 +130,6 @@ npm run dev
 
 ---
 
-## Deployment
-
-The app is deployed across two platforms:
-
-| Service | Platform | URL |
-|---------|----------|-----|
-| Frontend | Vercel | `https://your-app.vercel.app` |
-| Backend + DB | Railway | `https://your-backend.up.railway.app` |
-
-### Deploy to Railway (Backend + Database)
-
-1. Create a new project at [railway.app](https://railway.app) → **Deploy from GitHub** → select this repo → set root directory to `backend/`
-2. Add a **PostgreSQL** database to the project (Railway injects `DATABASE_URL` automatically)
-3. Add environment variables:
-   ```
-   GEMINI_API_KEY=your_key_here
-   ALLOWED_ORIGINS=https://your-app.vercel.app,http://localhost:3000
-   ```
-4. After deploy, open a shell in Railway and run: `python seed.py`
-
-### Deploy to Vercel (Frontend)
-
-1. Import this repo at [vercel.com](https://vercel.com) → set root directory to `frontend/`
-2. Add environment variable:
-   ```
-   NEXT_PUBLIC_API_URL=https://your-backend.up.railway.app
-   ```
-3. Deploy. Done.
-
 ---
 
 ## API Reference
