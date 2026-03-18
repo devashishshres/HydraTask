@@ -6,6 +6,7 @@ Endpoints:
   POST /hydrate    — takes a vague task, returns a structured action card
 """
 
+import os
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -17,9 +18,13 @@ from hydrator import hydrate_task
 app = FastAPI(title="HydraTask API")
 
 # Allow the Next.js frontend to call this API
+# ALLOWED_ORIGINS env var is a comma-separated list; falls back to localhost for local dev
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+_allowed_origins = [o.strip() for o in _raw_origins.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=_allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
